@@ -47,11 +47,12 @@ def run_cross_val(model, data, features, num_of_selections = 12, target='next_yr
 
         train_df = data.loc[train_idx]
         val_df = data.loc[val_idx]
-        model.fit(train_df[features], train_df[target])
-        val_probs = model.predict_proba(val_df[features])[:, 1]
+        train_group = train_df.groupby('season').size().values
+        model.fit(train_df[features], train_df[target],group=train_group)
+        val_score = model.predict(val_df[features])
 
         val_df_copy = val_df.copy()
-        val_df_copy['val_scores'] = val_probs
+        val_df_copy['val_scores'] = val_score
         val_df_copy['predicted_all_star'] = 0
         for season in val_df_copy['season'].unique():
             season_mask = val_df_copy['season'] == season
@@ -139,6 +140,7 @@ def fill_missing_seasons(players_df):
                 'season': season,
                 'team': last_team,
                 'all_star': 0,   
+                'g': 0,
             }
             all_rows.append(pd.DataFrame([blank_row]))
     filled_df = pd.concat(all_rows, ignore_index=True)
@@ -146,13 +148,13 @@ def fill_missing_seasons(players_df):
     return filled_df
 def get_proximity_to_prime(age):
     if 27 <= age <= 31:
-        return 100
+        return 1
     elif age < 27:
-        distance_from_prime = 27 - age
-        return max(0, 100 - (distance_from_prime * 4)) # scale scores upwards as players approach their primes
+        distance_from_prime = (27 - age) / 100
+        return max(0, 1 - (distance_from_prime * 4)) # scale scores upwards as players approach their primes
     else:  # age > 31
-        distance_from_prime = 31 - age
-        return -(max(0, 100 - (distance_from_prime * 10))) # scale score lower as players age past 31
+        distance_from_prime = (31 - age)/100
+        return -(max(0, 1 - (distance_from_prime * 10))) # scale score lower as players age past 31
 def get_conference(team, season):
     """Returns 'East' or 'West' based on team abbreviation and season."""
     
