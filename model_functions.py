@@ -360,3 +360,4 @@ def display_top_guesses(east_df, west_df, num_of_selections=12, cols=['player', 
         plt.tight_layout()
         plt.show()
     interact(plot_for_season,season=Dropdown(options=list(range((min_season), max_season + 1)),value=max_season,description="Season"))
+
