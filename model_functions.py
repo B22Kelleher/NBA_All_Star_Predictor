@@ -11,7 +11,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 
 
 
-def cross_val_splits(df, start_year = 2000, years_per_split = 5, train_window = 20):
+def cross_val_splits(df, years_per_split = 5, train_window = 20):
     """Create 5-year splits where each split trains on all years except a 5-year validation window"""
     seasons = sorted(df['season'].unique())
     splits = []
@@ -39,9 +39,9 @@ def cross_val_splits(df, start_year = 2000, years_per_split = 5, train_window = 
     return splits
 
 
-def run_cross_val(model, data, features, num_of_selections = 12, target='next_yr_all_star', start_year=2000):
+def run_cross_val(model, data, features, num_of_selections = 12, target='next_yr_all_star'):
     results = []
-    splits = cross_val_splits(data, start_year)
+    splits = cross_val_splits(data)
 
     for fold, (train_idx, val_idx, train_years, val_years) in enumerate(splits, start=1):
 
