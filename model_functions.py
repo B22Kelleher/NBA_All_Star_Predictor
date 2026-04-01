@@ -79,7 +79,7 @@ def run_cross_val(model, data, features, num_of_selections = 12, target='next_yr
                 'precision@12': precision_score(y_true, y_pred, zero_division=0),
                 'recall@12': recall_score(y_true, y_pred, zero_division=0),
                 'f1@12': f1_score(y_true, y_pred, zero_division=0),
-                'ndcg@12': ndcg_score([y_true], [y_prob], k=24)
+                'ndcg@12': ndcg_score([y_true], [y_prob], k=12)
             })
         season_df = pd.DataFrame(season_metrics)
         metrics = {
